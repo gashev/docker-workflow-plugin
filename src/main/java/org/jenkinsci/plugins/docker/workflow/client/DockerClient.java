@@ -255,6 +255,20 @@ public class DockerClient {
             return null;
         }
     }
+
+    /**
+     * Check if current docker command is podman.
+     *
+     * @return true if is a podman, false if is a docker, otherwise {@code null}
+     */
+    public Boolean isPodman() throws IOException, InterruptedException {
+        LaunchResult result = launch(new EnvVars(), true, "-v");
+        if (result.getStatus() == 0) {
+            return !result.getOut().startsWith("Docker");
+        } else {
+            return null;
+        }
+    }
     
     private static final Pattern pattern = Pattern.compile("^(\\D+)(\\d+)\\.(\\d+)\\.(\\d+)(.*)");
     /**
