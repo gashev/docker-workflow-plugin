@@ -25,6 +25,7 @@ package org.jenkinsci.plugins.docker.workflow.client;
 
 import com.google.common.base.Optional;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import hudson.AbortException;
 import hudson.EnvVars;
 import hudson.FilePath;
 import hudson.Launcher;
@@ -259,15 +260,14 @@ public class DockerClient {
     /**
      * Check if current docker command is podman.
      *
-     * @return true if is a podman, false if is a docker, otherwise {@code null}
+     * @return true if is a podman, false otherwise.
      */
-    public Boolean isPodman() throws IOException, InterruptedException {
+    public Boolean isPodman() throws AbortException, IOException, InterruptedException {
         LaunchResult result = launch(new EnvVars(), true, "-v");
         if (result.getStatus() == 0) {
             return !result.getOut().startsWith("Docker");
-        } else {
-            return null;
         }
+        throw new AbortException("Error get docker version.");
     }
     
     private static final Pattern pattern = Pattern.compile("^(\\D+)(\\d+)\\.(\\d+)\\.(\\d+)(.*)");
